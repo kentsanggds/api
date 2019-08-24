@@ -15,6 +15,15 @@ if [ -z $TRAVIS_BUILD_DIR ]; then
     src=.
 else 
     src="$TRAVIS_BUILD_DIR"
+
+    if [ $environment = 'live' ]; then
+        echo $TRAVIS_KEY_live | base64 --decode > travis_rsa
+    else
+        echo $TRAVIS_KEY_preview | base64 --decode > travis_rsa
+    fi
+    eval "$(ssh-agent)"
+    chmod 600 travis_rsa
+    ssh-add travis_rsa
 fi
 
 if [ -z $debug ]; then
@@ -39,6 +48,10 @@ if [ $port != 'No environment' ]; then
     eval "FRONTEND_URL=\$FRONTEND_URL_$environment"
     eval "IMAGES_URL=\$IMAGES_URL_$environment"
     eval "CELERY_BROKER_URL=\$CELERY_BROKER_URL_$environment"
+    eval "PROJECT=\$PROJECT_$environment"
+    eval "GOOGLE_AUTH_USER=\$GOOGLE_AUTH_USER_$environment"
+    eval "JWT_SECRET=\$JWT_SECRET_$environment"
+    eval "GOOGLE_APPLICATION_CREDENTIALS=\$GOOGLE_APPLICATION_CREDENTIALS_$environment"
     
     echo starting app $environment on port $port
     ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user@$deploy_host """
@@ -66,12 +79,15 @@ if [ $port != 'No environment' ]; then
     export TRAVIS_COMMIT=$TRAVIS_COMMIT
     export CELERY_BROKER_URL=$CELERY_BROKER_URL
 
+    if [ ! -z $GOOGLE_AUTH_USER ]; then
+        gcloud auth activate-service-account $GOOGLE_AUTH_USER --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+    fi
+
     sudo ./scripts/bootstrap.sh
     ./scripts/run_celery.sh
     ./scripts/run_app.sh $environment gunicorn $output_params"""
 
-    eval "API_ENV=\${API_$environment}"
-    ./scripts/check_site.sh $API_ENV
+    ./scripts/check_site.sh $deploy_host:$port
 else
     echo "$port"
     exit 1

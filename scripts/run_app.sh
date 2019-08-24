@@ -27,7 +27,7 @@ DATABASE_URL_ENV="\${DATABASE_URL_$ENV}"
 
 eval "DATABASE_URL=$DATABASE_URL_ENV"
 
-if psql -lqt | cut -d \| -f 1 | grep -qw ${DATABASE_URL##*/}; then
+if psql -lqt "${DATABASE_URL}" | cut -d \| -f 1 | grep -qw ${DATABASE_URL##*/}; then
   echo ${DATABASE_URL##*/} 'already exists'
 else
   createdb ${DATABASE_URL##*/}
