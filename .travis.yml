@@ -8,7 +8,7 @@ install:
 - ./scripts/bootstrap.sh
 - pip install coveralls
 script:
-- eval $INTEGRITY_SCRIPT
+# - eval $INTEGRITY_SCRIPT
 - ./scripts/run_tests.sh
 after_success:
 - coveralls
