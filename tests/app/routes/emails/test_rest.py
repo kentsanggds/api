@@ -364,6 +364,7 @@ class WhenPostingUpdateEmail:
         emails = Email.query.all()
         assert len(emails) == 1
         assert emails[0].extra_txt == data['extra_txt']
+        assert emails[0].task_id is None
 
         assert mock_revoke_task.call_args[0][0] == 'task_id'
         assert mock_send_email.call_args[0][0] == [TEST_ADMIN_USER]

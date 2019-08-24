@@ -113,6 +113,7 @@ def update_email(email_id):
         elif data.get('email_state') == REJECTED:
             if email.task_id:
                 revoke_task(email.task_id)
+                dao_update_email(email_id, task_id=None)
 
             message = '<div>Please correct this email <a href="{}">{}</a></div>'.format(
                 '{}/emails/{}'.format(current_app.config['FRONTEND_ADMIN_URL'], str(email.id)),
