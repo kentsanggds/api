@@ -494,7 +494,7 @@ def import_events():
 
             events.append(event)
             dao_create_event(event)
-            current_app.logger.info('added event {} - {}'.format(event.old_id, event.title))
+            current_app.logger.info(u'added event {} - {}'.format(event.old_id, event.title))
         else:
             err = u'event already exists: {} - {}'.format(event.old_id, event.title)
             current_app.logger.info(err)
