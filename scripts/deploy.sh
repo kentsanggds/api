@@ -19,6 +19,8 @@ else
     if [ $environment = 'live' ]; then
         echo $TRAVIS_KEY_live | base64 --decode > travis_rsa
         GOOGLE_APPLICATION_CREDENTIALS="$GOOGLE_APPLICATION_CREDENTIALS_live"
+        deploy_host="$deploy_host_live"
+        user="$user_live"
     else
         echo $TRAVIS_KEY_preview | base64 --decode > travis_rsa
     fi
