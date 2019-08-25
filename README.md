@@ -88,21 +88,21 @@ Imports can be run via `integration_test.sh`
 
 ```
 # import venues
-./integration.sh -iv
+./integration_test.sh -iv
 # import speakers
-./integration.sh -is
+./integration_test.sh -is
 # import event types
-./integration.sh -iet
+./integration_test.sh -iet
 # import events
-./integration.sh -ie
+./integration_test.sh -ie
 # import articles
-./integration.sh -ia
+./integration_test.sh -ia
 # import marketing
-./integration.sh -ima
+./integration_test.sh -ima
 # import members
-./integration.sh -ime
+./integration_test.sh -ime
 # import emails
-./integration.sh -iem
+./integration_test.sh -iem
 ```
 
 ### Importing images

@@ -16,6 +16,9 @@
         #event_image {
             box-shadow:0px 0px 10px gray;
         }
+        #fees {
+            font-weight: bold;
+        }
     </style>
 {% endblock %}
 
@@ -38,8 +41,10 @@
                                 <h4>{{ event.event_type.event_type|upper }}: {{ event.title|safe }}</h4>
                                 <div>{{ description|safe }}</div>
                                 {{extra_txt|safe}}
-                                <div class='font-weight-bold mt-2'>ADMISSION &pound;{{ event.fee }} (Concession &pound;{{ event.conc_fee }})</div>
+                                <div id='fees'>ADMISSION &pound;{{ event.fee }} (Concession &pound;{{ event.conc_fee }})</div>
                                 {{details|safe}}
+                                <div>Click here to <a href='{{FRONTEND_URL}}/event/{{ event.id }}'>book</a></div>
+                                <div 
                             </div>
 
                         <br>&nbsp;<br>&nbsp;

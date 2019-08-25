@@ -1,19 +1,13 @@
 #!/bin/bash
 set -o pipefail
 
-if [ ! -z "$1" ]; then
-    api_url=$1
-else
-    api_url="http://localhost:5000/"
-fi
-
-echo $api_url
+echo "Checking: $1"
 
 n=0
 until [ $n -ge 5 ]
 do
-    info=$(curl -s -X GET "$api_url" | jq -r '.info')
-    if [ ! -z "$info" ]; then
+    commit=$(curl -s -X GET "$1" | jq -r '.commit')
+    if [ ! -z "$commit" ]; then
         break
     fi
 
@@ -23,10 +17,9 @@ do
     sleep 10
 done
 
-if [ -z "$info" -o "$info" = "null" ]; then
-    echo 'failed'
+if [ -z "$commit" -o "$commit" != $TRAVIS_COMMIT ]; then
+    echo 'failed '$commit
     exit 1
 else
-    echo $info
-    echo 'success'
+    echo 'success '$commit
 fi
