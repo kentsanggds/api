@@ -85,7 +85,7 @@ if [ $port != 'No environment' ]; then
         gcloud auth activate-service-account $GOOGLE_AUTH_USER --key-file=$GOOGLE_APPLICATION_CREDENTIALS
     fi
 
-    sudo ./scripts/bootstrap.sh
+    ./scripts/bootstrap.sh
     ./scripts/run_celery.sh
     ./scripts/run_app.sh $environment gunicorn $output_params"""
 
