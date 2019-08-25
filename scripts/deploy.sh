@@ -18,6 +18,7 @@ else
 
     if [ $environment = 'live' ]; then
         echo $TRAVIS_KEY_live | base64 --decode > travis_rsa
+        GOOGLE_APPLICATION_CREDENTIALS="$GOOGLE_APPLICATION_CREDENTIALS_live"
     else
         echo $TRAVIS_KEY_preview | base64 --decode > travis_rsa
     fi
@@ -51,7 +52,6 @@ if [ $port != 'No environment' ]; then
     eval "PROJECT=\$PROJECT_$environment"
     eval "GOOGLE_AUTH_USER=\$GOOGLE_AUTH_USER_$environment"
     eval "JWT_SECRET=\$JWT_SECRET_$environment"
-    eval "GOOGLE_APPLICATION_CREDENTIALS=\$GOOGLE_APPLICATION_CREDENTIALS_$environment"
     
     echo starting app $environment on port $port
     ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user@$deploy_host """
