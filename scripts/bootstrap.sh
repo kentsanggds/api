@@ -1,6 +1,4 @@
 #!/bin/bash
-pip install virtualenv --upgrade
-
 if [ ! -d "venv" ]; then
     virtualenv venv
 fi
