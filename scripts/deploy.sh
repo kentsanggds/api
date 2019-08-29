@@ -44,6 +44,7 @@ if [ $port != 'No environment' ]; then
     eval "PAYPAL_USER=\${PAYPAL_USER_$environment}"
     eval "PAYPAL_PASSWORD=\${PAYPAL_PASSWORD_$environment}"
     eval "PAYPAL_SIG=\${PAYPAL_SIG_$environment}"
+    eval "PAYPAL_RECEIVER=\${PAYPAL_RECEIVER_$environment}"
     eval "EMAIL_PROVIDER_URL=\${EMAIL_PROVIDER_URL_$environment}"
     eval "EMAIL_PROVIDER_APIKEY=\${EMAIL_PROVIDER_APIKEY_$environment}"
     eval "FRONTEND_ADMIN_URL=\${FRONTEND_ADMIN_URL_$environment}"
@@ -72,6 +73,7 @@ PAYPAL_URL=$PAYPAL_URL
 PAYPAL_USER=$PAYPAL_USER
 PAYPAL_PASSWORD=$PAYPAL_PASSWORD
 PAYPAL_SIG=$PAYPAL_SIG
+PAYPAL_RECEIVER=$PAYPAL_RECEIVER
 EMAIL_PROVIDER_URL=$EMAIL_PROVIDER_URL
 EMAIL_PROVIDER_APIKEY=$EMAIL_PROVIDER_APIKEY
 FRONTEND_ADMIN_URL=$FRONTEND_ADMIN_URL
@@ -83,8 +85,8 @@ TRAVIS_COMMIT=$TRAVIS_COMMIT
 CELERY_BROKER_URL=$CELERY_BROKER_URL
 EOL
 
-sudo systemctl daemon-reload
-sudo systemctl restart na-api.service
+systemctl daemon-reload
+systemctl restart na-api.service
         """
     else
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user@$deploy_host """
@@ -102,6 +104,7 @@ sudo systemctl restart na-api.service
         export PAYPAL_USER=$PAYPAL_USER
         export PAYPAL_PASSWORD=$PAYPAL_PASSWORD
         export PAYPAL_SIG=$PAYPAL_SIG
+        export PAYPAL_RECEIVER=$PAYPAL_RECEIVER
         export EMAIL_PROVIDER_URL=$EMAIL_PROVIDER_URL
         export EMAIL_PROVIDER_APIKEY=$EMAIL_PROVIDER_APIKEY
         export FRONTEND_ADMIN_URL=$FRONTEND_ADMIN_URL

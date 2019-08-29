@@ -10,3 +10,4 @@ pytest-eradicate==0.0.3
 pytest-flake8==1.0.0
 pytest-flask==0.10.0
 pytest-mock==1.10.0
+requests-mock==1.7.0

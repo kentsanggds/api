@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from app import db
 from app.dao.decorators import transactional
 from app.models import EventDate
@@ -40,3 +42,8 @@ def dao_has_event_id_and_datetime(event_id, datetime):
 
 def dao_get_event_dates_by_event_id(event_id):
     return EventDate.query.filter_by(event_id=event_id).all()
+
+
+def dao_get_event_date_on_date(target_date):
+    next_day = datetime.strftime(datetime.strptime(target_date, "%Y-%m-%d") + timedelta(days=1), "%Y-%m-%d")
+    return EventDate.query.filter(EventDate.event_datetime.between(target_date, next_day)).first()

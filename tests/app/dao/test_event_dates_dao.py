@@ -6,7 +6,8 @@ from app.dao.event_dates_dao import (
     dao_update_event_date,
     dao_get_event_dates,
     dao_get_event_date_by_id,
-    dao_get_event_dates_by_event_id
+    dao_get_event_dates_by_event_id,
+    dao_get_event_date_on_date
 )
 from app.models import EventDate
 
@@ -83,3 +84,8 @@ class WhenUsingEventDatesDAO(object):
 
         event_dates = dao_get_event_dates_by_event_id(sample_event_date.event_id)
         assert len(event_dates) == 1
+
+    def it_gets_event_date_on_date(self, db_session, sample_event_with_dates):
+        target_date = sample_event_with_dates.event_dates[0].event_datetime.strftime('%Y-%m-%d')
+        event_date = dao_get_event_date_on_date(target_date)
+        assert event_date.event_id == sample_event_with_dates.id
