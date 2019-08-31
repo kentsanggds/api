@@ -19,7 +19,7 @@ if [ ! -z "$1" ]; then
 fi
 
 # kill any existing services running on port
-fuser -k -n tcp $port
+sudo kill `sudo lsof -t -i:$port`
 
 echo "hosting on $www_dir"
 
@@ -64,12 +64,12 @@ if [ "$2" = "gunicorn" -o "$1" = "gunicorn" ]; then
     --name $NAME \
     --timeout $TIMEOUT \
     --workers $NUM_WORKERS \
-    # --user=$USER --group=$GROUP \
-    # --bind=unix:$SOCKFILE
     --log-level DEBUG \
     --reload \
     --worker-class gevent \
     --pid /tmp/gunicorn-$ENV.pid
+    # --user=$USER --group=$GROUP \
+    # --bind=unix:$SOCKFILE
 else
   export APP_SERVER=flask
   python app_start.py runserver --port $port
