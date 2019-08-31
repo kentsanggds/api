@@ -21,6 +21,9 @@ fi
 # kill any existing services running on port
 fuser -k -n tcp $port
 
+# kill existing celery workers
+ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9
+
 echo "hosting on $www_dir"
 
 DATABASE_URL_ENV="\${DATABASE_URL_$ENV}"
