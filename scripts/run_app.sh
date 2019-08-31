@@ -68,7 +68,8 @@ if [ "$2" = "gunicorn" -o "$1" = "gunicorn" ]; then
     # --bind=unix:$SOCKFILE
     --log-level DEBUG \
     --reload \
-    --worker-class gevent
+    --worker-class gevent \
+    --pid /tmp/gunicorn-$ENV.pid
 else
   export APP_SERVER=flask
   python app_start.py runserver --port $port
