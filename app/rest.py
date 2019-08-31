@@ -11,7 +11,11 @@ register_errors(base_blueprint)
 def get_info():
     current_app.logger.info('get_info')
     query = 'SELECT version_num FROM alembic_version'
-    full_name = db.session.execute(query).fetchone()[0]
+    try:
+        full_name = db.session.execute(query).fetchone()[0]
+    except Exception as e:
+        current_app.logger.error('Database exception: %r', e)
+        full_name = 'Database error, check logs'
     return jsonify(
         environment=current_app.config['ENVIRONMENT'],
         info=full_name,
