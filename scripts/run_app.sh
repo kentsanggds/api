@@ -1,5 +1,5 @@
 #!/bin/bash
-set +e
+set +ex
 
 ENV=development
 www_dir="www-$ENV"
