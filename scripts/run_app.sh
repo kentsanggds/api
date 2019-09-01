@@ -39,6 +39,10 @@ if [ -z "$VIRTUAL_ENV" ] && [ -d venv ]; then
   source ./venv/bin/activate
 fi
 
+if [ -z "$TRAVIS_COMMIT" ]; then
+  export TRAVIS_COMMIT=$(git rev-parse HEAD)
+fi
+
 python app_start.py db upgrade
 
 if [ "$2" = "gunicorn" -o "$1" = "gunicorn" ]; then
