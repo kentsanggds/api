@@ -57,37 +57,67 @@ if [ $port != 'No environment' ]; then
     
     echo starting app $environment on port $port
     ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user@$deploy_host """
-    cd www-$environment
-    export ENVIRONMENT=$environment
-    export DATABASE_URL_$environment=$DATABASE_URL_ENV
-    export ADMIN_CLIENT_ID=$ADMIN_CLIENT_ID
-    export ADMIN_CLIENT_SECRET=$ADMIN_CLIENT_SECRET
-    export JWT_SECRET=$JWT_SECRET
-    export PROJECT=$PROJECT
-    export GOOGLE_STORE=$GOOGLE_STORE
-    export ADMIN_USERS=$ADMIN_USERS
-    export EMAIL_DOMAIN=$EMAIL_DOMAIN
-    export PAYPAL_URL=$PAYPAL_URL
-    export PAYPAL_USER=$PAYPAL_USER
-    export PAYPAL_PASSWORD=$PAYPAL_PASSWORD
-    export PAYPAL_SIG=$PAYPAL_SIG
-    export EMAIL_PROVIDER_URL=$EMAIL_PROVIDER_URL
-    export EMAIL_PROVIDER_APIKEY=$EMAIL_PROVIDER_APIKEY
-    export FRONTEND_ADMIN_URL=$FRONTEND_ADMIN_URL
-    export API_BASE_URL=$API_BASE_URL
-    export FRONTEND_URL=$FRONTEND_URL
-    export IMAGES_URL=$IMAGES_URL
-    export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS
-    export TRAVIS_COMMIT=$TRAVIS_COMMIT
-    export CELERY_BROKER_URL=$CELERY_BROKER_URL
+    if [ $environment='live' ]; then
+cat >/home/$user/www-live/na-api.env << \EOL
+ENVIRONMENT=$environment
+DATABASE_URL_$environment=$DATABASE_URL_ENV
+ADMIN_CLIENT_ID=$ADMIN_CLIENT_ID
+ADMIN_CLIENT_SECRET=$ADMIN_CLIENT_SECRET
+JWT_SECRET=$JWT_SECRET
+PROJECT=$PROJECT
+GOOGLE_STORE=$GOOGLE_STORE
+ADMIN_USERS=$ADMIN_USERS
+EMAIL_DOMAIN=$EMAIL_DOMAIN
+PAYPAL_URL=$PAYPAL_URL
+PAYPAL_USER=$PAYPAL_USER
+PAYPAL_PASSWORD=$PAYPAL_PASSWORD
+PAYPAL_SIG=$PAYPAL_SIG
+EMAIL_PROVIDER_URL=$EMAIL_PROVIDER_URL
+EMAIL_PROVIDER_APIKEY=$EMAIL_PROVIDER_APIKEY
+FRONTEND_ADMIN_URL=$FRONTEND_ADMIN_URL
+API_BASE_URL=$API_BASE_URL
+FRONTEND_URL=$FRONTEND_URL
+IMAGES_URL=$IMAGES_URL
+GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS
+TRAVIS_COMMIT=$TRAVIS_COMMIT
+CELERY_BROKER_URL=$CELERY_BROKER_URL
+EOL
 
-    if [ ! -z $GOOGLE_AUTH_USER ]; then
-        gcloud auth activate-service-account $GOOGLE_AUTH_USER --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+sudo systemctl restart na-api.service
+    else
+        cd www-$environment
+        export ENVIRONMENT=$environment
+        export DATABASE_URL_$environment=$DATABASE_URL_ENV
+        export ADMIN_CLIENT_ID=$ADMIN_CLIENT_ID
+        export ADMIN_CLIENT_SECRET=$ADMIN_CLIENT_SECRET
+        export JWT_SECRET=$JWT_SECRET
+        export PROJECT=$PROJECT
+        export GOOGLE_STORE=$GOOGLE_STORE
+        export ADMIN_USERS=$ADMIN_USERS
+        export EMAIL_DOMAIN=$EMAIL_DOMAIN
+        export PAYPAL_URL=$PAYPAL_URL
+        export PAYPAL_USER=$PAYPAL_USER
+        export PAYPAL_PASSWORD=$PAYPAL_PASSWORD
+        export PAYPAL_SIG=$PAYPAL_SIG
+        export EMAIL_PROVIDER_URL=$EMAIL_PROVIDER_URL
+        export EMAIL_PROVIDER_APIKEY=$EMAIL_PROVIDER_APIKEY
+        export FRONTEND_ADMIN_URL=$FRONTEND_ADMIN_URL
+        export API_BASE_URL=$API_BASE_URL
+        export FRONTEND_URL=$FRONTEND_URL
+        export IMAGES_URL=$IMAGES_URL
+        export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS
+        export TRAVIS_COMMIT=$TRAVIS_COMMIT
+        export CELERY_BROKER_URL=$CELERY_BROKER_URL
+
+        if [ ! -z $GOOGLE_AUTH_USER ]; then
+            gcloud auth activate-service-account $GOOGLE_AUTH_USER --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+        fi
+
+        ./scripts/bootstrap.sh
+        ./scripts/run_celery.sh
+        ./scripts/run_app.sh $environment gunicorn $output_params
     fi
-
-    ./scripts/bootstrap.sh
-    ./scripts/run_celery.sh
-    ./scripts/run_app.sh $environment gunicorn $output_params"""
+    """
 
     ./scripts/check_site.sh $deploy_host:$port
 else
