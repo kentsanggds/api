@@ -58,7 +58,7 @@ if [ $port != 'No environment' ]; then
     echo starting app $environment on port $port
     if [ $environment = 'live' ]; then
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user@$deploy_host """
-cat >/home/$user/www-live/na-api.env << \EOL
+sudo cat >/home/$user/www-live/na-api.env << \EOL
 ENVIRONMENT=$environment
 DATABASE_URL_$environment=$DATABASE_URL_ENV
 ADMIN_CLIENT_ID=$ADMIN_CLIENT_ID
