@@ -1,5 +1,5 @@
 #!/bin/bash
-set +x
+set +ex
 
 if [ -z "$environment" ]; then
     if [ ! -z "$1" ]; then
@@ -56,8 +56,8 @@ if [ $port != 'No environment' ]; then
     eval "JWT_SECRET=\$JWT_SECRET_$environment"
     
     echo starting app $environment on port $port
-    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user@$deploy_host """
-    if [ $environment='live' ]; then
+    if [ $environment = 'live' ]; then
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user@$deploy_host """
 cat >/home/$user/www-live/na-api.env << \EOL
 ENVIRONMENT=$environment
 DATABASE_URL_$environment=$DATABASE_URL_ENV
@@ -84,7 +84,9 @@ CELERY_BROKER_URL=$CELERY_BROKER_URL
 EOL
 
 sudo systemctl restart na-api.service
+        """
     else
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user@$deploy_host """
         cd www-$environment
         export ENVIRONMENT=$environment
         export DATABASE_URL_$environment=$DATABASE_URL_ENV
@@ -116,8 +118,8 @@ sudo systemctl restart na-api.service
         ./scripts/bootstrap.sh
         ./scripts/run_celery.sh
         ./scripts/run_app.sh $environment gunicorn $output_params
+        """
     fi
-    """
 
     ./scripts/check_site.sh $deploy_host:$port
 else
