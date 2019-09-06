@@ -58,7 +58,7 @@ if [ $port != 'No environment' ]; then
     echo starting app $environment on port $port
     if [ $environment = 'live' ]; then
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user@$deploy_host """
-sudo cat >/home/$user/www-live/na-api.env << \EOL
+cat >/home/$user/www-live/na-api.env << \EOL
 ENVIRONMENT=$environment
 DATABASE_URL_$environment=$DATABASE_URL_ENV
 ADMIN_CLIENT_ID=$ADMIN_CLIENT_ID
@@ -83,6 +83,7 @@ TRAVIS_COMMIT=$TRAVIS_COMMIT
 CELERY_BROKER_URL=$CELERY_BROKER_URL
 EOL
 
+sudo systemctl daemon-reload
 sudo systemctl restart na-api.service
         """
     else
