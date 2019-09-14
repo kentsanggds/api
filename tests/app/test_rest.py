@@ -14,3 +14,12 @@ class WhenAccessingSiteInfo(object):
         json_resp = json.loads(response.get_data(as_text=True))['info']
         assert response.status_code == 200
         assert json_resp == version_from_db
+
+    def it_shows_db_error(self, mocker, client, db):
+        mocker.patch('app.rest.db.session.execute', side_effect=Exception('db error'))
+        response = client.get(
+            url_for('.get_info')
+        )
+        json_resp = json.loads(response.get_data(as_text=True))['info']
+        assert response.status_code == 200
+        assert json_resp == 'Database error, check logs'
