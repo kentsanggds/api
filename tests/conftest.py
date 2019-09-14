@@ -53,6 +53,7 @@ def app():
         'PAYPAL_USER': 'seller@test.com',
         'PAYPAL_PASSWORD': 'test pass',
         'PAYPAL_SIG': 'paypal signature',
+        'PAYPAL_RECEIVER': 'receiver@example.com',
         'API_BASE_URL': 'http://test',
         'FRONTEND_URL': 'http://frontend-test',
         'FRONTEND_ADMIN_URL': 'http://frontend-test/admin',
@@ -96,7 +97,7 @@ def db_session(db):
 
     db.session.remove()
     for tbl in reversed(db.metadata.sorted_tables):
-        if tbl.name not in ["event_states", "email_types", "email_states"]:
+        if tbl.name not in ["event_states", "email_types", "email_states", "ticket_types", "ticket_statuses"]:
             db.engine.execute(tbl.delete())
     db.session.commit()
 

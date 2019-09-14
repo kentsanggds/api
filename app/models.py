@@ -536,3 +536,62 @@ class Venue(db.Model):
             'directions': self.directions,
             'default': self.default,
         }
+
+
+class Order(db.Model):
+    __tablename__ = "orders"
+
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    old_id = db.Column(db.Integer)
+    member_id = db.Column(UUID(as_uuid=True), db.ForeignKey('members.id'))
+    old_member_id = db.Column(db.Integer)
+    email_address = db.Column(db.String)
+    buyer_name = db.Column(db.String)
+    txn_id = db.Column(db.String)
+    txn_type = db.Column(db.String)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    payment_status = db.Column(db.String)
+    payment_total = db.Column(db.Numeric(precision=2))
+    params = db.Column(db.String)
+
+
+TICKET_FULL = 'Full'
+TICKET_ALL_FULL = 'All_Full'
+TICKET_CONC = 'Concession'
+TICKET_ALL_CONC = 'All_Concession'
+TICKET_MEMBER = 'Member'
+TICKET_TYPES = [TICKET_FULL, TICKET_ALL_FULL, TICKET_CONC, TICKET_ALL_CONC, TICKET_MEMBER]
+
+
+class TicketType(db.Model):
+    __tablename__ = 'ticket_types'
+
+    _type = db.Column(db.String(), primary_key=True)
+
+
+TICKET_STATUS_USED = 'Used'
+TICKET_STATUS_UNUSED = 'Unused'
+
+
+class TicketStatus(db.Model):
+    __tablename__ = 'ticket_statuses'
+
+    status = db.Column(db.String(), primary_key=True)
+
+
+class Ticket(db.Model):
+    __tablename__ = "tickets"
+
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    event_id = db.Column(UUID(as_uuid=True), db.ForeignKey('events.id'))
+    old_id = db.Column(db.Integer)
+    order_id = db.Column(UUID(as_uuid=True), db.ForeignKey('orders.id'))
+    old_order_id = db.Column(db.Integer)
+    ticket_type = db.Column(db.String, db.ForeignKey('ticket_types._type'))
+    eventdate_id = db.Column(UUID(as_uuid=True), db.ForeignKey('event_dates.id'))
+    name = db.Column(db.String)
+    price = db.Column(db.Numeric(precision=2))
+    last_updated = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    status = db.Column(db.String, db.ForeignKey('ticket_statuses.status'), default=TICKET_STATUS_UNUSED)
+    ticket_number = db.Column(db.Integer)

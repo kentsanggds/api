@@ -44,6 +44,7 @@ class Config(object):
     PAYPAL_URL = os.environ.get('PAYPAL_URL')
     PAYPAL_USER = os.environ.get('PAYPAL_USER')
     PAYPAL_PASSWORD = os.environ.get('PAYPAL_PASSWORD')
+    PAYPAL_RECEIVER = os.environ.get('PAYPAL_RECEIVER')
     PAYPAL_SIG = os.environ.get('PAYPAL_SIG')
     EMAIL_PROVIDER_URL = os.environ.get('EMAIL_PROVIDER_URL')
     EMAIL_PROVIDER_APIKEY = os.environ.get('EMAIL_PROVIDER_APIKEY')
