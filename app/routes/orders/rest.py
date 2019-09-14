@@ -29,12 +29,11 @@ register_errors(orders_blueprint)
 VERIFY_URL_PROD = 'https://ipnpb.paypal.com/cgi-bin/webscr'
 VERIFY_URL_TEST = 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr'
 
-# Switch as appropriate
-VERIFY_URL = VERIFY_URL_TEST
-
 
 @orders_blueprint.route('/orders/paypal/ipn', methods=['GET', 'POST'])
 def paypal_ipn():
+    VERIFY_URL = VERIFY_URL_PROD if current_app.config['ENVIRONMENT'] == 'live' else VERIFY_URL_TEST
+
     params = request.form.to_dict(flat=False)
     current_app.logger.info('IPN params: %r', params)
 

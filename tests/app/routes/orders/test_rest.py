@@ -2,12 +2,12 @@ from flask import url_for
 import pytest
 import requests
 import requests_mock
-from mock import call
+from mock import call, Mock
 
 from app.dao.orders_dao import dao_get_orders
 from app.dao.tickets_dao import dao_get_tickets_for_order
 from app.models import Order, Ticket
-from app.routes.orders.rest import VERIFY_URL_TEST
+from app.routes.orders.rest import VERIFY_URL_PROD, VERIFY_URL_TEST
 
 sample_ipns = [
     # single ticket
@@ -90,6 +90,23 @@ sample_invalid_date = (
 
 
 class WhenHandlingPaypalIPN:
+    @pytest.mark.parametrize('env,url', [
+        ('live', VERIFY_URL_PROD), ('other', VERIFY_URL_TEST)]
+    )
+    def it_goes_to_correct_verify_url(self, mocker, client, db_session, sample_event_with_dates, env, url):
+        mocker.patch.dict('app.application.config', {
+            'ENVIRONMENT': env,
+        })
+        mock_post = mocker.patch('app.routes.orders.rest.requests.post', return_value=Mock())
+
+        client.post(
+            url_for('orders.paypal_ipn'),
+            data='txn_id=test',
+            content_type="application/x-www-form-urlencoded"
+        )
+
+        assert mock_post.call_args[0][0] == url
+
     def it_creates_orders_and_tickets(self, mocker, client, db_session, sample_event_with_dates):
         txn_ids = ['112233', '112244', '112255']
         txn_types = ['cart', 'cart', 'paypal_here']
