@@ -362,6 +362,13 @@ def get_events():
     return jsonify(events)
 
 
+@events_blueprint.route('/event/<uuid:event_id>')
+@jwt_required
+def get_event_by_id(event_id):
+    event = dao_get_event_by_id(event_id)
+    return jsonify(event.serialize())
+
+
 @events_blueprint.route('/events/year/<int:year>')
 @jwt_required
 def get_events_in_year(year):

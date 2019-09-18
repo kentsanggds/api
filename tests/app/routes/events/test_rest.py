@@ -156,6 +156,15 @@ class WhenGettingEvents:
         data = json.loads(response.get_data(as_text=True))
         assert len(data) == 1
 
+    def it_returns_event_by_id(self, client, sample_event, db_session):
+        response = client.get(
+            url_for('events.get_event_by_id', event_id=sample_event.id),
+            headers=[('Content-Type', 'application/json'), create_authorization_header()]
+        )
+
+        data = json.loads(response.get_data(as_text=True))
+        assert data['id'] == str(sample_event.id)
+
     @freeze_time("2018-01-10T19:00:00")
     def it_returns_all_future_events(self, client, sample_event_with_dates, sample_event_type, db_session):
         event_1 = create_event(
