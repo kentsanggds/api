@@ -1,4 +1,4 @@
-from flask import url_for
+from flask import current_app, url_for
 import pytest
 import requests
 import requests_mock
@@ -7,7 +7,6 @@ from mock import call, Mock
 from app.dao.orders_dao import dao_get_orders
 from app.dao.tickets_dao import dao_get_tickets_for_order
 from app.models import Order, Ticket
-from app.routes.orders.rest import VERIFY_URL_PROD, VERIFY_URL_TEST
 
 sample_ipns = [
     # single ticket
@@ -90,26 +89,10 @@ sample_invalid_date = (
 
 
 class WhenHandlingPaypalIPN:
-    @pytest.mark.parametrize('env,url', [
-        ('live', VERIFY_URL_PROD), ('other', VERIFY_URL_TEST)]
-    )
-    def it_goes_to_correct_verify_url(self, mocker, client, db_session, sample_event_with_dates, env, url):
-        mocker.patch.dict('app.application.config', {
-            'ENVIRONMENT': env,
-        })
-        mock_post = mocker.patch('app.routes.orders.rest.requests.post', return_value=Mock())
-
-        client.post(
-            url_for('orders.paypal_ipn'),
-            data='txn_id=test',
-            content_type="application/x-www-form-urlencoded"
-        )
-
-        assert mock_post.call_args[0][0] == url
-
     def it_creates_orders_and_tickets(self, mocker, client, db_session, sample_event_with_dates):
         mocker.patch('app.routes.orders.rest.Storage')
         mocker.patch('app.routes.orders.rest.Storage.upload_blob_from_base64string')
+        mocker.patch('app.routes.orders.rest.send_email')
         txn_ids = ['112233', '112244', '112255']
         txn_types = ['cart', 'cart', 'paypal_here']
         num_tickets = [1, 2, 1]
@@ -119,7 +102,7 @@ class WhenHandlingPaypalIPN:
                 id=sample_event_with_dates.id, txn_id=txn_ids[i], txn_type=txn_types[i])
 
             with requests_mock.mock() as r:
-                r.post(VERIFY_URL_TEST, text='VERIFIED')
+                r.post(current_app.config['PAYPAL_VERIFY_URL'], text='VERIFIED')
 
                 client.post(
                     url_for('orders.paypal_ipn'),
@@ -138,7 +121,7 @@ class WhenHandlingPaypalIPN:
 
     def it_does_not_create_an_order_if_payment_not_complete(self, mocker, client, db_session):
         with requests_mock.mock() as r:
-            r.post(VERIFY_URL_TEST, text='VERIFIED')
+            r.post(current_app.config['PAYPAL_VERIFY_URL'], text='VERIFIED')
 
             client.post(
                 url_for('orders.paypal_ipn'),
@@ -154,7 +137,7 @@ class WhenHandlingPaypalIPN:
             id=sample_event_with_dates.id, txn_id='112233', txn_type='Cart')
 
         with requests_mock.mock() as r:
-            r.post(VERIFY_URL_TEST, text=resp)
+            r.post(current_app.config['PAYPAL_VERIFY_URL'], text=resp)
 
             client.post(
                 url_for('orders.paypal_ipn'),
@@ -168,7 +151,7 @@ class WhenHandlingPaypalIPN:
         mock_logger = mocker.patch('app.routes.orders.rest.current_app.logger.error')
         sample_ipn = sample_wrong_receiver.format(id=sample_event.id)
         with requests_mock.mock() as r:
-            r.post(VERIFY_URL_TEST, text='VERIFIED')
+            r.post(current_app.config['PAYPAL_VERIFY_URL'], text='VERIFIED')
 
             client.post(
                 url_for('orders.paypal_ipn'),
@@ -185,7 +168,7 @@ class WhenHandlingPaypalIPN:
             id=sample_uuid, txn_id='112233', txn_type='Cart')
 
         with requests_mock.mock() as r:
-            r.post(VERIFY_URL_TEST, text='VERIFIED')
+            r.post(current_app.config['PAYPAL_VERIFY_URL'], text='VERIFIED')
 
             client.post(
                 url_for('orders.paypal_ipn'),
@@ -200,7 +183,7 @@ class WhenHandlingPaypalIPN:
         sample_ipn = sample_invalid_date.format(id=sample_event_with_dates.id)
 
         with requests_mock.mock() as r:
-            r.post(VERIFY_URL_TEST, text='VERIFIED')
+            r.post(current_app.config['PAYPAL_VERIFY_URL'], text='VERIFIED')
 
             client.post(
                 url_for('orders.paypal_ipn'),
@@ -210,7 +193,7 @@ class WhenHandlingPaypalIPN:
         orders = dao_get_orders()
         assert not orders
 
-    def it_does_not_creates_orders_with_duplicate_txn_ids(self, mocker, client, db_session, sample_event_with_dates):
+    def it_does_not_create_orders_with_duplicate_txn_ids(self, mocker, client, db_session, sample_event_with_dates):
         txn_ids = ['112233', '112233']
         txn_types = ['cart', 'cart']
 
@@ -219,7 +202,7 @@ class WhenHandlingPaypalIPN:
                 id=sample_event_with_dates.id, txn_id=txn_ids[i], txn_type=txn_types[i])
 
             with requests_mock.mock() as r:
-                r.post(VERIFY_URL_TEST, text='VERIFIED')
+                r.post(current_app.config['PAYPAL_VERIFY_URL'], text='VERIFIED')
 
                 client.post(
                     url_for('orders.paypal_ipn'),

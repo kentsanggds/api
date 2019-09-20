@@ -54,6 +54,7 @@ def app():
         'PAYPAL_PASSWORD': 'test pass',
         'PAYPAL_SIG': 'paypal signature',
         'PAYPAL_RECEIVER': 'receiver@example.com',
+        'PAYPAL_VERIFY_URL': 'https://test.paypal/verify',
         'API_BASE_URL': 'http://test',
         'FRONTEND_URL': 'http://frontend-test',
         'FRONTEND_ADMIN_URL': 'http://frontend-test/admin',
