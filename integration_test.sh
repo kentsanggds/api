@@ -433,6 +433,8 @@ email=$(cat  << EOF
 EOF
 )
 
+preview_email="%7B%22details%22%3A%20%22%3Cdiv%3ESome%20additional%20details%3C/div%3E%22%2C%20%22email_type%22%3A%20%22event%22%2C%20%22event_id%22%3A%20%22$EVENT_ID%22%2C%20%22extra_txt%22%3A%20%22%3Cdiv%3ESome%20more%20information%20about%20the%20event%3C/div%3E%22%2C%20%22replace_all%22%3A%20false%7D"
+
 update_email=$(cat  << EOF
     {
         "email_state": "ready", 
@@ -454,10 +456,10 @@ EOF
 function PreviewEmail {
     echo "*** Preview email ***"
 
-    curl -X POST $api_server'/email/preview' \
-    -H "Accept: application/json" \
-    -H "Authorization: Bearer $TKN" \
-    -d "$email" > 'data/preview_email.html'
+    echo $preview_email
+
+    curl -X GET $api_server'/email/preview?data='$preview_email \
+    -H "Accept: application/json" > 'data/preview_email.html'
 
     open 'data/preview_email.html'
 }
@@ -530,6 +532,19 @@ function TestPaypal {
     -H "Accept: application/json" \
     -H "Authorization: Bearer $TKN" 
 }
+
+
+sample_ipn="mc_gross=0.01&protection_eligibility=Ineligible&item_number1=$EVENT_ID&tax=0.00&payer_id=XXYYZZ1&payment_date=10%3A00%3A00+Jan+01%2C+2018+PST&option_name2_1=Date&option_selection1_1=Concession&payment_status=Completed&charset=windows-1252&mc_shipping=0.00&mc_handling=0.00&first_name=Test&mc_fee=0.01&notify_version=3.8&custom=&payer_status=verified&business=receiver%40example.com&num_cart_items=1&mc_handling1=0.00&verify_sign=XXYYZZ1.t.sign&payer_email=$ADMIN_USER&mc_shipping1=0.00&tax1=0.00&btn_id1=XXYYZZ1&option_name1_1=Type&txn_id=112233&payment_type=instant&option_selection2_1=1&last_name=User&item_name1=Get+Inspired+-+Discover+Philosophy&receiver_email=receiver%40example.com&payment_fee=&quantity1=1&receiver_id=AABBCC1&txn_type=Cart&mc_gross_1=0.01&mc_currency=GBP&residence_country=GB&transaction_subject=&payment_gross=&ipn_track_id=112233"
+
+
+function TestPaypalIPN {
+    echo "*** Test paypal IPN ***"
+
+    curl -X POST $api_server'/orders/paypal/ipn' \
+    -H "Accept: application/x-www-form-urlencoded" \
+    -d "$sample_ipn"
+}
+
 
 function Logout {
     echo "*** Logout ***"
@@ -690,6 +705,10 @@ case "$arg" in
 
         -pay)
             TestPaypal
+        ;;
+
+        -pipn)
+            TestPaypalIPN
         ;;
 
         -uem)
