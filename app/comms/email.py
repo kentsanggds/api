@@ -2,6 +2,7 @@ from flask import current_app, jsonify, render_template
 import requests
 from HTMLParser import HTMLParser
 
+from app.comms.encryption import encrypt
 from app.models import EVENT
 from app.dao.events_dao import dao_get_event_by_id
 
@@ -37,6 +38,11 @@ def get_nice_event_dates(event_dates):
 def get_email_html(email_type, **kwargs):
     if email_type == EVENT:
         event = dao_get_event_by_id(kwargs.get('event_id'))
+        member_id = kwargs.get('member_id')
+        if not member_id:
+            member_id = '0'  # for preview of emails
+        unsubcode = encrypt(
+            current_app.config['EMAIL_TOKENS']['member_id'] + member_id, current_app.config['EMAIL_UNSUB_SALT'])
         return render_template(
             'emails/events.html',
             event=event,
@@ -44,6 +50,7 @@ def get_email_html(email_type, **kwargs):
             description=h.unescape(event.description),
             details=kwargs.get('details'),
             extra_txt=kwargs.get('extra_txt'),
+            unsubcode=unsubcode
         )
 
 

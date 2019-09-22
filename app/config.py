@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import json
 import sys
 import argparse
 import os
@@ -49,6 +50,9 @@ class Config(object):
     PAYPAL_VERIFY_URL = os.environ.get('PAYPAL_VERIFY_URL')
     EMAIL_PROVIDER_URL = os.environ.get('EMAIL_PROVIDER_URL')
     EMAIL_PROVIDER_APIKEY = os.environ.get('EMAIL_PROVIDER_APIKEY')
+    EMAIL_TOKENS = json.loads(os.environ.get('EMAIL_TOKENS')) if 'EMAIL_TOKENS' in os.environ else {}
+    EMAIL_SALT = os.environ.get('EMAIL_SALT')
+    EMAIL_UNSUB_SALT = os.environ.get('EMAIL_UNSUB_SALT')
     FRONTEND_ADMIN_URL = os.environ.get('FRONTEND_ADMIN_URL')
     API_BASE_URL = os.environ.get('API_BASE_URL')
     IMAGES_URL = os.environ.get('IMAGES_URL')
