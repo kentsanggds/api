@@ -10,6 +10,8 @@ h = HTMLParser()
 
 
 def get_nice_event_dates(event_dates):
+    event_dates.sort(key=lambda k: k.event_datetime)
+
     event_date_str = ''
     _event_month = ''
     _event_dates = ''
