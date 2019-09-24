@@ -266,6 +266,21 @@ class Event(db.Model):
             )
         return event_dates
 
+    def is_event_today(self, eventdate_id):
+        for date in self.event_dates:
+            if (
+                date.id == eventdate_id and
+                date.event_datetime.strftime('%Y-%m-%d') == datetime.datetime.today().strftime('%Y-%m-%d')
+            ):
+                return True
+        return False
+
+    def get_sorted_event_dates(self):
+        if self.event_dates:
+            dates = [e.serialize() for e in self.event_dates]
+            dates.sort(key=lambda k: k['event_datetime'])
+            return dates
+
     def get_last_event_date(self):
         if self.event_dates:
             dates = [e.serialize() for e in self.event_dates]
@@ -595,3 +610,4 @@ class Ticket(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     status = db.Column(db.String, db.ForeignKey('ticket_statuses.status'), default=TICKET_STATUS_UNUSED)
     ticket_number = db.Column(db.Integer)
+    event = db.relationship("Event", backref=db.backref("tickets", uselist=False))
