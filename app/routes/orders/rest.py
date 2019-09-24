@@ -25,6 +25,7 @@ from app.dao import dao_create_record
 from app.dao.events_dao import dao_get_event_by_id
 from app.dao.event_dates_dao import dao_get_event_date_on_date, dao_get_event_date_by_id
 from app.dao.orders_dao import dao_get_order_with_txn_id
+from app.dao.tickets_dao import dao_get_ticket_id, dao_update_ticket
 from app.errors import register_errors, InvalidRequest
 
 from app.models import Order, Ticket, TICKET_STATUS_USED
@@ -106,9 +107,30 @@ def paypal_ipn():
     return 'Paypal IPN'
 
 
-@orders_blueprint.route('/orders/ticket/<string:ticket_id>', methods=['GET', 'POST'])
+@orders_blueprint.route('/orders/ticket/<string:ticket_id>', methods=['GET'])
 def use_ticket(ticket_id):
-    pass
+    ticket = dao_get_ticket_id(ticket_id)
+
+    if not ticket.event.is_event_today(ticket.eventdate_id):
+        data = {
+            'update_response': 'Event is not today'
+        }
+    else:
+        if ticket.status == TICKET_STATUS_USED:
+            data = {
+                'update_response': 'Ticket already used'
+            }
+        else:
+            dao_update_ticket(ticket_id, status=TICKET_STATUS_USED)
+
+            data = {
+                'update_response': 'Ticket updated to used'
+            }
+
+    data['ticket_id'] = ticket_id
+    data['title'] = ticket.event.title
+
+    return jsonify(data)
 
 
 def parse_ipn(ipn):

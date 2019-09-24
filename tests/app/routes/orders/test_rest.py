@@ -1,4 +1,5 @@
 from flask import current_app, url_for
+from freezegun import freeze_time
 import pytest
 import requests
 import requests_mock
@@ -6,7 +7,9 @@ from mock import call, Mock
 
 from app.dao.orders_dao import dao_get_orders
 from app.dao.tickets_dao import dao_get_tickets_for_order
-from app.models import Order, Ticket
+from app.models import Order, Ticket, TICKET_STATUS_USED, TICKET_STATUS_UNUSED
+from tests.conftest import create_authorization_header
+from tests.db import create_ticket
 
 sample_ipns = [
     # single ticket
@@ -81,7 +84,7 @@ sample_invalid_date = (
     "charset=windows-1252&mc_shipping=0.00&mc_handling=0.00&first_name=Test&mc_fee=0.01&notify_version=3.8&custom=&"
     "payer_status=verified&business=receiver%40example.com&num_cart_items=1&mc_handling1=0.00&verify_sign=XXYYZZ1"
     ".t.sign&payer_email=test1%40example.com&mc_shipping1=0.00&tax1=0.00&btn_id1="
-    "XXYYZZ1&option_name1_1=Type&txn_id=112233&payment_type=instant&option_selection2_1=2&last_name=User&"
+    "XXYYZZ1&option_name1_1=Type&txn_id=112233&payment_type=instant&option_selection2_1=3&last_name=User&"
     "item_name1=Get+Inspired+-+Discover+Philosophy&receiver_email=receiver%40example.com&payment_fee=&quantity1=1&"
     "receiver_id=AABBCC1&txn_type=Cart&mc_gross_1=0.01&mc_currency=GBP&residence_country=GB&transaction_subject=&"
     "payment_gross=&ipn_track_id=112233"
@@ -217,3 +220,74 @@ class WhenHandlingPaypalIPN:
 
         tickets = dao_get_tickets_for_order(orders[0].id)
         assert len(tickets) == 1
+
+
+class WhenProcessingTicket:
+
+    @pytest.fixture(scope='function')
+    def sample_ticket(self, db_session, sample_event_with_dates):
+        return create_ticket(
+            event_id=sample_event_with_dates.id,
+            old_id=1,
+            eventdate_id=sample_event_with_dates.get_sorted_event_dates()[0]['id']
+        )
+
+    @freeze_time("2018-01-01T19:00:00")
+    def it_updates_ticket_to_used(self, client, sample_ticket):
+        response = client.get(
+            url_for('orders.use_ticket', ticket_id=sample_ticket.id),
+            content_type="application/x-www-form-urlencoded",
+        )
+
+        assert sample_ticket.status == TICKET_STATUS_USED
+        assert response.json == {
+            'ticket_id': str(sample_ticket.id),
+            'title': sample_ticket.event.title,
+            'update_response': 'Ticket updated to used'
+        }
+
+    @freeze_time("2018-01-01T19:00:00")
+    def it_updates_ticket_to_used_with_old_id(self, client, sample_ticket):
+        response = client.get(
+            url_for('orders.use_ticket', ticket_id=str(sample_ticket.old_id)),
+            content_type="application/x-www-form-urlencoded",
+        )
+
+        assert sample_ticket.status == TICKET_STATUS_USED
+        assert response.json == {
+            'ticket_id': str(sample_ticket.old_id),
+            'title': sample_ticket.event.title,
+            'update_response': 'Ticket updated to used'
+        }
+
+    def it_does_not_update_ticket_if_not_event_date(self, client, sample_ticket):
+        response = client.get(
+            url_for('orders.use_ticket', ticket_id=sample_ticket.id),
+            content_type="application/x-www-form-urlencoded",
+        )
+
+        assert sample_ticket.status == TICKET_STATUS_UNUSED
+        assert response.json == {
+            'ticket_id': str(sample_ticket.id),
+            'title': sample_ticket.event.title,
+            'update_response': 'Event is not today'
+        }
+
+    @freeze_time("2018-01-01T19:00:00")
+    def it_does_not_update_ticket_to_used_if_used(self, db_session, client, sample_event_with_dates):
+        event_dates = sample_event_with_dates.get_sorted_event_dates()
+        ticket = create_ticket(
+            status=TICKET_STATUS_USED,
+            event_id=sample_event_with_dates.id,
+            eventdate_id=event_dates[0]['id']
+        )
+        response = client.get(
+            url_for('orders.use_ticket', ticket_id=ticket.id),
+            content_type="application/x-www-form-urlencoded",
+        )
+
+        assert response.json == {
+            'ticket_id': str(ticket.id),
+            'title': ticket.event.title,
+            'update_response': 'Ticket already used'
+        }
