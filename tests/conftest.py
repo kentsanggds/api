@@ -143,8 +143,11 @@ def sample_event(db):
 
 @pytest.fixture(scope='function')
 def sample_event_with_dates(db, sample_event_date_without_event):
+    another_event_date = create_event_date(event_datetime='2018-01-02 19:00')
     return create_event(
-        title='test_title', description='test description', event_dates=[sample_event_date_without_event]
+        title='test_title',
+        description='test description',
+        event_dates=[sample_event_date_without_event, another_event_date]
     )
 
 
