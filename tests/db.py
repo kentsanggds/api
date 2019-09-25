@@ -1,5 +1,6 @@
 from app import db
 
+from app.dao import dao_create_record
 from app.dao.articles_dao import dao_create_article
 from app.dao.blacklist_dao import store_token
 from app.dao.emails_dao import dao_create_email
@@ -14,8 +15,8 @@ from app.dao.speakers_dao import dao_create_speaker
 from app.dao.users_dao import dao_create_user
 from app.dao.venues_dao import dao_create_venue
 from app.models import (
-    Article, Email, Event, EventDate, EventType, Fee, Marketing, Member, RejectReason, Speaker, User, Venue,
-    EVENT
+    Article, Email, Event, EventDate, EventType, Fee, Marketing, Member, RejectReason, Speaker, Ticket, User, Venue,
+    EVENT, TICKET_STATUS_UNUSED
 )
 
 
@@ -326,3 +327,26 @@ def create_reject_reason(event_id=None, reason='Test reason', resolved=False, cr
     dao_create_reject_reason(reject_reason)
 
     return reject_reason
+
+
+def create_ticket(
+    old_id=None, event_id=None, order_id=None, eventdate_id=None,
+    ticket_type=None, name=None, price=None, status=None, ticket_number=None
+):
+    data = {
+        'old_id': old_id,
+        'event_id': event_id,
+        'order_id': order_id,
+        'ticket_type': ticket_type,
+        'eventdate_id': eventdate_id,
+        'name': name,
+        'price': price,
+        'status': status,
+        'ticket_number': ticket_number,
+    }
+
+    ticket = Ticket(**data)
+
+    dao_create_record(ticket)
+
+    return ticket

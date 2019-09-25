@@ -46,6 +46,9 @@ def app():
         'JWT_SECRET_KEY': 'secret',
         'ADMIN_USERS': [TEST_ADMIN_USER],
         'EMAIL_DOMAIN': 'example.com',
+        'EMAIL_TOKENS': {"member_id": "memberid", "type": "typeid"},
+        'EMAIL_SALT': 'test',
+        'EMAIL_UNSUB_SALT': 'unsub_test',
         'EVENTS_MAX': 2,
         'PROJECT': 'test-project',
         'STORAGE': 'test-store',
@@ -54,6 +57,7 @@ def app():
         'PAYPAL_PASSWORD': 'test pass',
         'PAYPAL_SIG': 'paypal signature',
         'PAYPAL_RECEIVER': 'receiver@example.com',
+        'PAYPAL_VERIFY_URL': 'https://test.paypal/verify',
         'API_BASE_URL': 'http://test',
         'FRONTEND_URL': 'http://frontend-test',
         'FRONTEND_ADMIN_URL': 'http://frontend-test/admin',
@@ -139,8 +143,11 @@ def sample_event(db):
 
 @pytest.fixture(scope='function')
 def sample_event_with_dates(db, sample_event_date_without_event):
+    another_event_date = create_event_date(event_datetime='2018-01-02 19:00')
     return create_event(
-        title='test_title', description='test description', event_dates=[sample_event_date_without_event]
+        title='test_title',
+        description='test description',
+        event_dates=[sample_event_date_without_event, another_event_date]
     )
 
 
