@@ -85,3 +85,4 @@ def downgrade():
     op.drop_table('tickets')
     op.drop_table('orders')
     op.drop_table('ticket_types')
+    op.drop_table('ticket_statuses')
