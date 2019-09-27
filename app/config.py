@@ -61,7 +61,7 @@ class Config(object):
     TRAVIS_COMMIT = os.environ.get('TRAVIS_COMMIT')
 
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
-    EMAIL_DELAY = 30
+    EMAIL_DELAY = 60
     EMAIL_LIMIT = 400
 
 
