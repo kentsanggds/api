@@ -32,7 +32,7 @@ fi
 if [ -z $debug ]; then
     output_params=">&- 2>&- <&- &"
 else
-    output_params="&> /var/log/na-api/$environment.log"
+    output_params="&>> /var/log/na-api/$environment.log"
 fi
 
 port="$(python $src/app/config.py -e $environment)"
