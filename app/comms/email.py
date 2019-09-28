@@ -43,8 +43,11 @@ def get_email_html(email_type, **kwargs):
         member_id = kwargs.get('member_id')
         if not member_id:
             member_id = '0'  # for preview of emails
+        current_app.logger.debug('Email Tokens %s', current_app.config['EMAIL_TOKENS'])
         unsubcode = encrypt(
-            current_app.config['EMAIL_TOKENS']['member_id'] + member_id, current_app.config['EMAIL_UNSUB_SALT'])
+            "{}={}".format(current_app.config['EMAIL_TOKENS']['member_id'], member_id),
+            current_app.config['EMAIL_UNSUB_SALT']
+        )
         return render_template(
             'emails/events.html',
             event=event,

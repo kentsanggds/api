@@ -63,7 +63,6 @@ def import_articles():
     for item in data:
         err = ''
         article = Article.query.filter(Article.old_id == item['id']).first()
-        print(article)
         if not article:
             article = Article(
                 old_id=item['id'],
