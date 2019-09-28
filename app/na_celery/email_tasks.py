@@ -22,7 +22,12 @@ def send_emails(email_id):
         message = None
         if email.email_type == EVENT:
             message = get_email_html(
-                email.email_type, event_id=email.event_id, details=email.details, extra_txt=email.extra_txt)
+                email.email_type,
+                event_id=email.event_id,
+                details=email.details,
+                extra_txt=email.extra_txt,
+                member_id=member_id
+            )
 
         email_status_code = send_email(email_to, subject, message)
         dao_add_member_sent_to_email(email_id, member_id, status_code=email_status_code)
