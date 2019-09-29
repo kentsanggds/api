@@ -29,6 +29,8 @@ def create_app(**kwargs):
 
     configure_logging()
 
+    report_missing_config()
+
     db.init_app(application)
     celery.init_app(application)
 
@@ -101,6 +103,15 @@ def get_env():
 
 def get_root_path():
     return application.root_path
+
+
+def report_missing_config():  # pragma: no cover
+    if application.config['ENVIRONMENT'] == 'test':
+        return
+    from app.config import Config
+    for key in [k for k in Config.__dict__.keys() if k[:1] != '_']:
+        if not application.config.get(key):
+            application.logger.warning('Missing config setting: %s', key)
 
 
 def configure_logging():
