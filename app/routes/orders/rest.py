@@ -97,7 +97,7 @@ def paypal_ipn():
             message += "<span>{} on {}</span></div>".format(
                 event.title, event_date.event_datetime.strftime('%-d %b at %-I{}%p'.format(minutes)))
 
-        send_email(order.email_address, 'New Acropolis Event Tickets', message, unsubscribe_line=False)
+        send_email(order.email_address, 'New Acropolis Event Tickets', message)
 
     elif r.text == 'INVALID':
         current_app.logger.info('INVALID %r', params['txn_id'])
