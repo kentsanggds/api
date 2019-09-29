@@ -31,7 +31,6 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     ADMIN_CLIENT_ID = os.environ.get('ADMIN_CLIENT_ID')
     ADMIN_CLIENT_SECRET = os.environ.get('ADMIN_CLIENT_SECRET')
-    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
     TOKEN_EXPIRY = os.environ.get('TOKEN_EXPIRY', 60 * 24)  # expires every 24 hours
     APP_SERVER = os.environ.get('APP_SERVER')
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET')
