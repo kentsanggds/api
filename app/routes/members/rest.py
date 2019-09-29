@@ -11,8 +11,10 @@ from flask_jwt_extended import jwt_required
 from app.dao.members_dao import (
     dao_create_member,
     dao_get_member_by_id,
+    dao_update_member
 )
 
+from app.comms.encryption import decrypt, get_tokens
 from app.errors import register_errors
 
 from app.models import Marketing, Member
@@ -21,6 +23,16 @@ from app.schema_validation import validate
 
 members_blueprint = Blueprint('members', __name__)
 register_errors(members_blueprint)
+
+
+@members_blueprint.route('/member/unsubscribe/<unsubcode>', methods=['POST'])
+@jwt_required
+def unsubscribe_member(unsubcode):
+    tokens = get_tokens(decrypt(unsubcode, current_app.config['EMAIL_UNSUB_SALT']))
+    member = dao_get_member_by_id(tokens[current_app.config['EMAIL_TOKENS']['member_id']])
+    dao_update_member(member.id, active=False)
+
+    return jsonify({'message': '{} unsubscribed'.format(member.name)})
 
 
 @members_blueprint.route('/members/import', methods=['POST'])
