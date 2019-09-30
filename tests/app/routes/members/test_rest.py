@@ -1,10 +1,25 @@
 from flask import json, url_for
 from tests.conftest import create_authorization_header
 
+from app.comms.encryption import encrypt
 from app.models import Member
 
 
 class WhenPostingMembers:
+
+    def it_unsubscribes_member(self, app, client, db_session, sample_member):
+        unsubcode = encrypt(
+            "{}={}".format(app.config['EMAIL_TOKENS']['member_id'], str(sample_member.id)),
+            app.config['EMAIL_UNSUB_SALT']
+        )
+
+        response = client.post(
+            url_for('members.unsubscribe_member', unsubcode=unsubcode),
+            headers=[('Content-Type', 'application/json'), create_authorization_header()]
+        )
+
+        assert not sample_member.active
+        assert response.json == {'message': '{} unsubscribed'.format(sample_member.name)}
 
     def it_imports_members(self, client, db, db_session, sample_marketing):
         data = [

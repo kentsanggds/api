@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from datetime import datetime, timedelta
 from sqlalchemy import and_
 
@@ -19,7 +21,11 @@ def dao_update_member(member_id, **kwargs):
 
 
 def dao_get_member_by_id(member_id):
-    return Member.query.filter_by(id=member_id).one()
+    try:
+        UUID(str(member_id), version=4)
+        return Member.query.filter_by(id=member_id).one()
+    except ValueError as e:
+        return Member.query.filter_by(old_id=member_id).one()
 
 
 def dao_get_members_not_sent_to(email_id):

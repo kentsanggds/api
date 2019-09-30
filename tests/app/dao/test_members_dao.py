@@ -33,6 +33,12 @@ class WhenUsingMembersDAO(object):
         fetched_member = dao_get_member_by_id(member.id)
         assert fetched_member == member
 
+    def it_gets_an_member_by_old_id(self, db, db_session):
+        member = create_member(name='Sid Grey', email='sid@example.com', old_id='1')
+
+        fetched_member = dao_get_member_by_id(member.old_id)
+        assert fetched_member == member
+
     def it_doesnt_create_members_with_same_email(self, db_session, sample_member):
         with pytest.raises(expected_exception=IntegrityError):
             create_member(name='Sid Grey', email=sample_member.email)
