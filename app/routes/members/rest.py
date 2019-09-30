@@ -10,6 +10,7 @@ from flask_jwt_extended import jwt_required
 
 from app.dao.members_dao import (
     dao_create_member,
+    dao_get_members,
     dao_get_member_by_id,
     dao_update_member
 )
@@ -33,6 +34,14 @@ def unsubscribe_member(unsubcode):
     dao_update_member(member.id, active=False)
 
     return jsonify({'message': '{} unsubscribed'.format(member.name)})
+
+
+@members_blueprint.route('/members', methods=['GET'])
+@jwt_required
+def get_members():
+    members = [m.serialize() for m in dao_get_members()]
+
+    return jsonify(members)
 
 
 @members_blueprint.route('/members/import', methods=['POST'])

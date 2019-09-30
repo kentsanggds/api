@@ -20,6 +20,10 @@ def dao_update_member(member_id, **kwargs):
     )
 
 
+def dao_get_members():
+    return Member.query.all()
+
+
 def dao_get_member_by_id(member_id):
     try:
         UUID(str(member_id), version=4)

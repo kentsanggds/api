@@ -1,8 +1,25 @@
-from flask import json, url_for
+from flask import json, jsonify, url_for
 from tests.conftest import create_authorization_header
 
 from app.comms.encryption import encrypt
 from app.models import Member
+
+from tests.db import create_member
+
+
+class WhenGettingMembers:
+
+    def it_returns_all_members(self, client, db_session, sample_member):
+        member = create_member(name='Sid Green', email='sid@example.com', active=False)
+
+        response = client.get(
+            url_for('members.get_members'),
+            headers=[('Content-Type', 'application/json'), create_authorization_header()]
+        )
+
+        assert len(response.json) == 2
+        assert response.json[0] == jsonify(sample_member.serialize()).json
+        assert response.json[1] == jsonify(member.serialize()).json
 
 
 class WhenPostingMembers:
