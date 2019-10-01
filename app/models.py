@@ -528,7 +528,7 @@ class User(db.Model):
         }
 
     def is_admin(self):
-        return self.access_area == USER_ADMIN
+        return USER_ADMIN in self.access_area
 
 
 class Venue(db.Model):
