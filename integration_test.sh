@@ -414,6 +414,14 @@ function GetUsers {
     -H "Authorization: Bearer $TKN" 
 }
 
+function GetMembers {
+    echo "*** Get members ***"
+
+    curl -X GET $api_server'/members' \
+    -H "Accept: application/json" \
+    -H "Authorization: Bearer $TKN" 
+}
+
 function GetUserByEmail {
     echo "*** Get user by email ***"
 
@@ -689,6 +697,10 @@ case "$arg" in
 
         -gu)
             GetUsers
+        ;;
+
+        -gmem)
+            GetMembers
         ;;
 
         -gue)

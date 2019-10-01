@@ -797,6 +797,7 @@ class WhenPostingUpdatingAnEvent:
     @pytest.fixture(autouse=True)
     def setup(self, mocker):
         self.mock_config = {
+            'ENVIRONMENT': 'live',
             'EMAIL_DOMAIN': 'test.com',
             'EMAIL_PROVIDER_URL': 'http://emailprovider',
             'EMAIL_PROVIDER_APIKEY': 'apikey',

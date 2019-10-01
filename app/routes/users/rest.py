@@ -50,7 +50,8 @@ def get_user_by_email(email):
 def is_admin(email):
     return jsonify({
         'email': email,
-        'is_admin': email in current_app.config['ADMIN_USERS']
+        'is_admin': email in current_app.config['ADMIN_USERS'] or
+        email in [u.email for u in dao_get_users() if u.is_admin()]
     })
 
 
