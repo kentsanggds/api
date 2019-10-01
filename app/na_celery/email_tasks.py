@@ -13,11 +13,17 @@ from app.models import EVENT
 def send_emails(email_id):
     members_not_sent_to = dao_get_members_not_sent_to(email_id)
 
-    current_app.logger.info('Task send_emails received %s, sending %d emails', email_id, len(members_not_sent_to))
+    if current_app.config['ENVIRONMENT'] != 'live':
+        limit = 3
+
+    current_app.logger.info(
+        'Task send_emails received %s, sending %d emails', email_id, limit or len(members_not_sent_to))
 
     email = dao_get_email_by_id(email_id)
 
-    for member_id, email_to in members_not_sent_to:
+    for index, (member_id, email_to) in enumerate(members_not_sent_to):
+        if limit and index > limit - 1:
+            break
         subject = email.get_subject()
         message = None
         if email.email_type == EVENT:
