@@ -3,6 +3,7 @@ from flask import json, url_for
 from tests.conftest import create_authorization_header
 from app.models import User, USER_ADMIN
 from app.dao.users_dao import dao_get_admin_users
+from tests.conftest import TEST_ADMIN_USER_CONFIG
 from tests.db import create_user
 
 
@@ -22,7 +23,19 @@ class WhenGettingUsers(object):
 
 class WhenCheckingIfAdminUser:
 
-    def it_returns_true_for_admin_user(self, client, sample_admin_user, db_session):
+    def it_returns_true_for_admin_user(self, app, client, sample_admin_user, db_session):
+        response = client.get(
+            url_for('user.is_admin', email=TEST_ADMIN_USER_CONFIG),
+            headers=[create_authorization_header()]
+        )
+        assert response.status_code == 200
+
+        data = json.loads(response.get_data(as_text=True))
+
+        assert data['is_admin']
+        assert data['email'] == TEST_ADMIN_USER_CONFIG
+
+    def it_returns_true_for_admin_user_created_on_web_app(self, client, sample_admin_user, db_session):
         response = client.get(
             url_for('user.is_admin', email=sample_admin_user.email),
             headers=[create_authorization_header()]
@@ -73,7 +86,7 @@ class WhenGettingUserByEmail(object):
 class WhenPostingUser(object):
 
     def it_creates_admin_user_if_email_is_admin_in_env_var(self, mocker, client, db_session):
-        data = {'email': 'admin@example.com', 'name': 'Admin User', 'access_area': ',email,'}
+        data = {'email': 'admin-config@example.com', 'name': 'Admin User', 'access_area': ',email,'}
         response = client.post(
             url_for('user.create_user'),
             data=json.dumps(data),

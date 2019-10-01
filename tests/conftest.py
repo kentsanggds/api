@@ -31,6 +31,7 @@ from tests.db import (
 
 TEST_DATABASE_URI = "postgresql://localhost/na_api_" + get_env() + '_test'
 TEST_ADMIN_USER = 'admin@example.com'
+TEST_ADMIN_USER_CONFIG = 'admin-config@example.com'
 
 
 @pytest.yield_fixture(scope='session')
@@ -44,7 +45,7 @@ def app():
         'ADMIN_CLIENT_SECRET': 'testsecret',
         'TOKEN_EXPIRY': 1,
         'JWT_SECRET_KEY': 'secret',
-        'ADMIN_USERS': [TEST_ADMIN_USER],
+        'ADMIN_USERS': [TEST_ADMIN_USER_CONFIG],
         'EMAIL_DOMAIN': 'example.com',
         'EMAIL_TOKENS': {"member_id": "memberid", "type": "typeid"},
         'EMAIL_SALT': 'test',
