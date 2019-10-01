@@ -53,6 +53,7 @@ class Config(object):
         in os.environ and os.environ.get('EMAIL_TOKENS')[:1] == '{' else {}
     EMAIL_SALT = os.environ.get('EMAIL_SALT')
     EMAIL_UNSUB_SALT = os.environ.get('EMAIL_UNSUB_SALT')
+    TEST_EMAIL = os.environ.get('TEST_EMAIL')
     FRONTEND_ADMIN_URL = os.environ.get('FRONTEND_ADMIN_URL')
     API_BASE_URL = os.environ.get('API_BASE_URL')
     IMAGES_URL = os.environ.get('IMAGES_URL')

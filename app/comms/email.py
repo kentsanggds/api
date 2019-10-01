@@ -66,6 +66,10 @@ def send_email(to, subject, message, _from=None):
     email_provider_url = current_app.config['EMAIL_PROVIDER_URL']
     email_provider_apikey = current_app.config['EMAIL_PROVIDER_APIKEY']
 
+    if current_app.config['ENVIRONMENT'] != 'live':
+        message = message.replace('<body>', '<body><div>Test email, intended for {}</div>'.format(to))
+        to = current_app.config['TEST_EMAIL']
+
     data = {
         "from": _from,
         "to": to,

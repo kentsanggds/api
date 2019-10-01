@@ -49,6 +49,7 @@ def app():
         'EMAIL_TOKENS': {"member_id": "memberid", "type": "typeid"},
         'EMAIL_SALT': 'test',
         'EMAIL_UNSUB_SALT': 'unsub_test',
+        'TEST_EMAIL': 'test@example.com',
         'EVENTS_MAX': 2,
         'PROJECT': 'test-project',
         'STORAGE': 'test-store',
