@@ -62,6 +62,20 @@ class Config(object):
     TRAVIS_COMMIT = os.environ.get('TRAVIS_COMMIT')
 
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
+    CELERY_TASK_RESULT_EXPIRES = 30
+    CELERY_TIMEZONE = 'Europe/London'
+
+    CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
+
+    # CELERYBEAT_SCHEDULE = {
+    #     'task_send_emails': {
+    #         'task': 'app.tasks.test.print_hello',
+    #         # Every minute
+    #         'schedule': crontab(hour="*"),
+    #     }
+    # }
     EMAIL_DELAY = 60
     EMAIL_LIMIT = 400
 
