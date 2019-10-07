@@ -8,9 +8,9 @@ if [ ! -z "$1" ]; then
 fi
 
 if [ "$ENV" = 'preview' ]; then
-    PORT=4555
+    FLOWER_PORT=4555
 else
-    PORT=5555
+    FLOWER_PORT=5555
 fi
 
 if [ -z "$VIRTUAL_ENV" ] && [ -d venv ]; then
@@ -23,10 +23,11 @@ pip install flower==0.9.3
 
 # kill existing celery workers
 ps auxww | grep "celery worker-$ENV" | awk '{print $2}' | xargs kill -9
+kill -9 `cat www-$ENV/celerybeat.pid`
 
 # kill flower
-lsof -i :$PORT  | awk '{if(NR>1)print $2}' | xargs kill -9
+lsof -i :$FLOWER_PORT  | awk '{if(NR>1)print $2}' | xargs kill -9
 
 eval "celery -A run_celery.celery worker --loglevel=INFO -n worker-$ENV --concurrency=1"$nooutput
-eval "celery -A run_celery.celery flower --url_prefix=celery --address=127.0.0.1 --port=$PORT"$nooutput
-eval "celery -A run_celery.celery beat --schedule=/tmp/celerybeat-schedule --loglevel=INFO --pidfile=/tmp/celerybeat.pid"$nooutput
+eval "celery -A run_celery.celery flower --url_prefix=celery --address=127.0.0.1 --port=$FLOWER_PORT"$nooutput
+eval "celery -A run_celery.celery beat --loglevel=INFO -n worker-$ENV --detach"
