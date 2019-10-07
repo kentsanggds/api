@@ -5,6 +5,8 @@ import sys
 import argparse
 import os
 
+from celery.schedules import crontab
+
 
 def parse_args():  # pragma: no cover
     parser = argparse.ArgumentParser()
@@ -62,18 +64,21 @@ class Config(object):
     TRAVIS_COMMIT = os.environ.get('TRAVIS_COMMIT')
 
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
-    CELERY_TASK_RESULT_EXPIRES = 30
+    # CELERY_TASK_RESULT_EXPIRES = 30
     CELERY_TIMEZONE = 'Europe/London'
-
-    CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
+    CELERY_ENABLE_UTC = True
+    CELERY_ACCEPT_CONTENT = ['json']
     CELERY_TASK_SERIALIZER = 'json'
-    CELERY_RESULT_SERIALIZER = 'json'
+    BEAT = True
+    # CELERY_IMPORTS = (
+    #     'app.send_emails',
+    #     # 'app.na_celery.email_tasks.send_periodic_emails',
+    # )
 
     # CELERYBEAT_SCHEDULE = {
     #     'task_send_emails': {
-    #         'task': 'app.tasks.test.print_hello',
-    #         # Every minute
-    #         'schedule': crontab(hour="*"),
+    #         'task': 'send-periodic-emails',
+    #         'schedule': crontab(minute="*"),
     #     }
     # }
     EMAIL_DELAY = 60
