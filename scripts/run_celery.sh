@@ -23,7 +23,10 @@ pip install flower==0.9.3
 
 # kill existing celery workers
 ps auxww | grep "celery worker-$ENV" | awk '{print $2}' | xargs kill -9
-kill -9 `cat www-$ENV/celerybeat.pid`
+
+if [ -f "www-$ENV/celerybeat.pid" ]; then
+  kill -9 `cat www-$ENV/celerybeat.pid`
+fi
 
 # kill flower
 lsof -i :$FLOWER_PORT  | awk '{if(NR>1)print $2}' | xargs kill -9
