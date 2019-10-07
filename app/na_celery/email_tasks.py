@@ -10,16 +10,16 @@ from app.dao.users_dao import dao_get_admin_users
 from app.models import EVENT
 
 
-celery.conf.CELERYBEAT_SCHEDULE = {
-    'send-periodic-emails': {
-        'task': 'send_periodic_emails',
-        'schedule': crontab(minute='*'),
-    },
-    # 'send-periodic-emails-10': {
-    #     'task': 'send_periodic_emails',
-    #     'schedule': 10.0,
-    # },
-}
+# celery.conf.CELERYBEAT_SCHEDULE = {
+#     'send-periodic-emails': {
+#         'task': 'send_periodic_emails',
+#         'schedule': crontab(minute='*'),
+#     },
+#     # 'send-periodic-emails-10': {
+#     #     'task': 'send_periodic_emails',
+#     #     'schedule': 10.0,
+#     # },
+# }
 
 
 @celery.task()

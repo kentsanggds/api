@@ -70,17 +70,13 @@ class Config(object):
     CELERY_ACCEPT_CONTENT = ['json']
     CELERY_TASK_SERIALIZER = 'json'
     BEAT = True
-    # CELERY_IMPORTS = (
-    #     'app.send_emails',
-    #     # 'app.na_celery.email_tasks.send_periodic_emails',
-    # )
 
-    # CELERYBEAT_SCHEDULE = {
-    #     'task_send_emails': {
-    #         'task': 'send-periodic-emails',
-    #         'schedule': crontab(minute="*"),
-    #     }
-    # }
+    CELERYBEAT_SCHEDULE = {
+        'send-periodic-emails': {
+            'task': 'send_periodic_emails',
+            'schedule': crontab(minute='*'),
+        },
+    }
     EMAIL_DELAY = 60
     EMAIL_LIMIT = 400
 
