@@ -69,14 +69,13 @@ class Config(object):
     CELERY_ENABLE_UTC = True
     CELERY_ACCEPT_CONTENT = ['json']
     CELERY_TASK_SERIALIZER = 'json'
-    BEAT = True
 
-    # CELERYBEAT_SCHEDULE = {
-    #     'send-periodic-emails': {
-    #         'task': 'send_periodic_emails',
-    #         'schedule': crontab(minute='*'),
-    #     },
-    # }
+    CELERYBEAT_SCHEDULE = {
+        'send-periodic-emails': {
+            'task': 'send_periodic_emails',
+            'schedule': crontab(minute='*'),
+        },
+    }
     EMAIL_DELAY = 60
     EMAIL_LIMIT = 400
 

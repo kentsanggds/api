@@ -6,6 +6,11 @@ www_dir="www-$ENV"
 
 port=5000
 
+if [ -z "$VIRTUAL_ENV" ] && [ -d venv ]; then
+  echo 'activate venv'
+  source ./venv/bin/activate
+fi
+
 if [ ! -z "$1" ]; then
     ENV=$1
 
@@ -14,7 +19,6 @@ if [ ! -z "$1" ]; then
     fi
 
     www_dir="www-$ENV"
-    cd $www_dir
     port="$(python app/config.py -e $ENV)"
 fi
 
@@ -32,11 +36,6 @@ if psql -lqt "${DATABASE_URL}" | cut -d \| -f 1 | grep -qw ${DATABASE_URL##*/}; 
 else
   createdb ${DATABASE_URL##*/}
   echo ${DATABASE_URL##*/} 'created'
-fi
-
-if [ -z "$VIRTUAL_ENV" ] && [ -d venv ]; then
-  echo 'activate venv'
-  source ./venv/bin/activate
 fi
 
 if [ -z "$TRAVIS_COMMIT" ]; then
