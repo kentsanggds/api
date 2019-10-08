@@ -137,8 +137,8 @@ systemctl restart na-api.service
         fi
 
         ./scripts/bootstrap.sh
-        ./scripts/run_celery.sh $environment
         ./scripts/run_app.sh $environment gunicorn $output_params
+        ./scripts/run_celery.sh $environment
         """
     fi
 
