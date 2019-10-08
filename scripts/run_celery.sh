@@ -25,7 +25,7 @@ pip install flower==0.9.3
 ps auxww | grep "celery worker-$ENV" | awk '{print $2}' | xargs kill -9
 
 if [ -f "celerybeat.pid" ]; then
-  kill -9 `cat celerybeat.pid`
+  kill -9 `cat celerybeat.pid` && rm celerybeat.pid
 fi
 
 # kill flower
