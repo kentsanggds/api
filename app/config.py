@@ -5,8 +5,6 @@ import sys
 import argparse
 import os
 
-from celery.schedules import crontab
-
 
 def parse_args():  # pragma: no cover
     parser = argparse.ArgumentParser()
