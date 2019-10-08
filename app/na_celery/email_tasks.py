@@ -54,4 +54,6 @@ def send_emails(email_id):
 
 @celery.task(name='send_periodic_emails')
 def send_periodic_emails():
+    with current_app.app_context():
+        current_app.logger.info('running my send_periodic_emails')
     current_app.logger.info('Task send_periodic_emails received')
